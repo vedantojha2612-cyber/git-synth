@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Git Synth // Audio-Visual Commit Equalizer</title>
+  <link rel="stylesheet" href="./src/styles/main.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎛️</text></svg>">
+</head>
+<body>
+  <!-- 80s CRT Phosphor Overlay -->
+  <div class="crt-overlay" id="crt-screen-overlay"></div>
+
+  <!-- 3D Perspective Outrun Grid Canvas -->
+  <div id="bg-canvas-container">
+    <canvas id="canvas-3d-grid"></canvas>
+  </div>
+
+  <div class="app-layout">
+    <!-- Header -->
+    <header class="app-header chassis-box">
+      <div class="corner-screw corner-tl"></div>
+      <div class="corner-screw corner-tr"></div>
+      <div class="corner-screw corner-bl"></div>
+      <div class="corner-screw corner-br"></div>
+
+      <div class="logo-group">
+        <span class="logo-badge">DSP-80</span>
+        <div>
+          <h1 class="app-title">GIT SYNTH</h1>
+          <div class="app-subtitle">AUDIO-VISUAL COMMIT EQUALIZER & RHYTHM ENGINE</div>
+        </div>
+      </div>
+
+      <div class="header-status-group">
+        <div class="status-indicator" id="engine-status">
+          <span class="status-dot"></span>
+          <span id="status-text">INITIALIZING ENGINE...</span>
+        </div>
+
+        <button class="btn-neon" id="btn-open-telemetry">
+          <span>👥</span> CONTRIBUTOR MATRIX
+        </button>
+
+        <button class="btn-neon" id="btn-toggle-crt">
+          <span>📺</span> CRT: ON
+        </button>
+
+        <button class="btn-neon" id="btn-toggle-horizon">
+          <span>🌅</span> 3D: ON
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Dashboard Grid -->
+    <main class="dashboard-grid">
+      <!-- Left Column: Visualizer, Timeline & 4-Channel Mixer -->
+      <section style="display: flex; flex-direction: column; gap: 16px;">
+        <!-- Oscilloscope Card -->
+        <div class="chassis-box visualizer-card">
+          <div class="corner-screw corner-tl"></div>
+          <div class="corner-screw corner-tr"></div>
+          <div class="card-header">
+            <div class="card-title">
+              <span class="dot"></span>
+              MASTER AUDIO OSCILLOSCOPE & SPECTRUM ANALYZER
+            </div>
+            <div class="viz-mode-tabs">
+              <button class="btn-tab active" data-mode="scope" id="tab-scope">OSCILLOSCOPE</button>
+              <button class="btn-tab" data-mode="spectrum" id="tab-spectrum">SPECTRUM BARS</button>
+              <button class="btn-tab" data-mode="lissajous" id="tab-lissajous">LISSAJOUS XY</button>
+            </div>
+          </div>
+
+          <div class="screen-container crt-screen-frame">
+            <canvas id="oscilloscope-canvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Timeline Scrubber Card -->
+        <div class="chassis-box timeline-card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="dot" style="background: var(--border-neon-pink); box-shadow: 0 0 6px var(--border-neon-pink);"></span>
+              COMMIT TIMELINE SCRUBBER
+            </div>
+            <div style="font-size: 0.75rem; font-family: var(--font-retro); color: var(--text-dim);" id="timeline-stats-label">
+              SYNCHRONIZED TIMELINE
+            </div>
+          </div>
+
+          <div class="timeline-track-wrap" id="timeline-container">
+            <div class="timeline-bg-grid"></div>
+            <div class="timeline-markers" id="timeline-markers"></div>
+            <div class="timeline-playhead" id="timeline-playhead"></div>
+          </div>
+        </div>
+
+        <!-- 4-Channel Mixer Console Card -->
+        <div class="chassis-box mixer-card">
+          <div class="corner-screw corner-bl"></div>
+          <div class="corner-screw corner-br"></div>
+          <div class="card-header">
+            <div class="card-title">
+              <span class="dot" style="background: var(--border-neon-amber); box-shadow: 0 0 6px var(--border-neon-amber);"></span>
+              4-CHANNEL HARDWARE EQUALIZER & MIXER CONSOLE
+            </div>
+            <div style="font-size: 0.75rem; font-family: var(--font-retro); color: var(--text-dim);">
+              12-BAND PEAK LED VU METERS
+            </div>
+          </div>
+
+          <div class="mixer-channels-grid" id="mixer-channels">
+            <!-- Dynamically rendered by mixer.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Commit Inspector & Telemetry Deck -->
+      <aside class="sidebar-panel">
+        <div class="chassis-box inspector-card">
+          <div class="corner-screw corner-tl"></div>
+          <div class="corner-screw corner-tr"></div>
+          <div class="card-header">
+            <div class="card-title">
+              <span class="dot"></span>
+              ACTIVE COMMIT TELEMETRY
+            </div>
+            <span id="commit-tag-badge" class="badge-tag" style="display: none;">v1.0.0</span>
+          </div>
+
+          <div class="commit-header-row">
+            <span class="commit-hash-badge" id="commit-hash">---</span>
+            <button class="btn-mini-copy" id="btn-copy-hash">COPY HASH</button>
+          </div>
+
+          <div class="commit-author-row">
+            <div class="author-avatar" id="commit-avatar">⚡</div>
+            <div class="author-meta">
+              <span class="author-name" id="commit-author">Loading...</span>
+              <span style="font-size: 0.7rem; color: var(--text-muted);" id="commit-time">---</span>
+            </div>
+          </div>
+
+          <div class="commit-message-box" id="commit-message">
+            Initializing commit synthesizer sequence...
+          </div>
+
+          <!-- Additions / Deletions Churn -->
+          <div class="churn-meter-group">
+            <div class="churn-label-row">
+              <span class="text-green" id="commit-ins">+0</span>
+              <span style="color: var(--text-dim);">DIFF CHURN RATIO</span>
+              <span class="text-red" id="commit-del">-0</span>
+            </div>
+            <div class="churn-bar-track">
+              <div class="churn-bar-ins" id="churn-bar-ins"></div>
+              <div class="churn-bar-del" id="churn-bar-del"></div>
+            </div>
+          </div>
+
+          <!-- Sound Signature Timbre Box -->
+          <div class="sound-signature-box">
+            <span class="sig-title">AUTHOR PROCEDURAL TIMBRE PROFILE</span>
+            <div class="sig-chips-grid">
+              <div class="sig-chip">
+                <span class="lbl">WAVEFORM</span>
+                <span class="val" id="sig-wave">sawtooth</span>
+              </div>
+              <div class="sig-chip">
+                <span class="lbl">CUTOFF</span>
+                <span class="val" id="sig-cutoff">2100Hz</span>
+              </div>
+              <div class="sig-chip">
+                <span class="lbl">REVERB</span>
+                <span class="val" id="sig-reverb">35%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Telemetry Spec Card -->
+        <div class="chassis-box inspector-card">
+          <div class="corner-screw corner-bl"></div>
+          <div class="corner-screw corner-br"></div>
+          <div class="card-header">
+            <div class="card-title">
+              <span class="dot" style="background: var(--border-neon-purple);"></span>
+              SYNTH ENGINE DSP SPEC
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.75rem; font-family: var(--font-retro);">
+            <div style="display: flex; justify-content: space-between;">
+              <span class="text-dim">SAMPLING RATE:</span>
+              <span class="text-cyan">44,100 / 48,000 Hz</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span class="text-dim">AUDIO CHANNELS:</span>
+              <span class="text-cyan">4 Polyphonic Tracks</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span class="text-dim">DSP COMPRESSOR:</span>
+              <span class="text-green">ACTIVE (-14dB Knee)</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span class="text-dim">TAPE DELAY:</span>
+              <span class="text-amber">280ms Ping-Pong</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span class="text-dim">LOOKAHEAD CLOCK:</span>
+              <span class="text-cyan">25ms High Precision</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Global Bottom Transport Dock -->
+    <footer class="transport-dock chassis-box">
+      <div class="transport-buttons">
+        <button class="btn-neon btn-play" id="btn-play">
+          <span class="icon">▶</span> PLAY
+        </button>
+        <button class="btn-neon" id="btn-stop">
+          <span>◼</span> STOP
+        </button>
+        <button class="btn-neon" id="btn-rewind">
+          <span>⏮</span> REWIND
+        </button>
+        <button class="btn-neon active" id="btn-loop">
+          <span>🔁</span> LOOP: ON
+        </button>
+      </div>
+
+      <!-- Segment Displays -->
+      <div class="transport-digital-readouts">
+        <div class="readout-block">
+          <span class="label">TIME</span>
+          <div class="digital-display" id="display-time">00:00.0</div>
+        </div>
+        <div class="readout-block">
+          <span class="label">BAR</span>
+          <div class="digital-display" id="display-bar">01</div>
+        </div>
+        <div class="readout-block">
+          <span class="label">BEAT</span>
+          <div class="digital-display" id="display-beat">1.0</div>
+        </div>
+        <div class="readout-block">
+          <span class="label">BPM</span>
+          <div class="digital-display text-pink" id="bpm-val">118</div>
+        </div>
+      </div>
+
+      <div class="transport-controls-right">
+        <div class="control-item">
+          <label>TEMPO</label>
+          <input type="range" id="bpm-slider" min="60" max="180" value="118">
+        </div>
+
+        <div class="control-item">
+          <label>SCALE</label>
+          <select id="scale-select">
+            <option value="synthwave_minor">Synthwave Minor (A-Pent)</option>
+            <option value="dorian">Cyber Dorian (A-Dorian)</option>
+            <option value="natural_minor">Natural Minor (A-Aeolian)</option>
+          </select>
+        </div>
+
+        <div class="control-item">
+          <label>MASTER</label>
+          <input type="range" id="master-volume" min="0" max="1.5" step="0.05" value="1.0">
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Contributor Telemetry & Matrix Modal -->
+  <div class="modal-overlay" id="telemetry-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>GIT SYNTH // CONTRIBUTOR TIMBRE MATRIX</h3>
+        <button class="btn-close" id="btn-close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="stats-summary-pills" id="modal-stats-summary">
+          <!-- Filled by modal.js -->
+        </div>
+
+        <table class="telemetry-table">
+          <thead>
+            <tr>
+              <th>CONTRIBUTOR</th>
+              <th>COMMITS</th>
+              <th>DIFF LINES</th>
+              <th>WAVEFORM</th>
+              <th>CUTOFF</th>
+              <th>REVERB</th>
+            </tr>
+          </thead>
+          <tbody id="authors-table-body">
+            <!-- Filled by modal.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
