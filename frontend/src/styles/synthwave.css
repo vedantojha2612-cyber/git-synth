@@ -1,0 +1,175 @@
+/**
+ * 80s Synthwave & Cyberpunk Neon Hardware Console Design System
+ */
+
+:root {
+  --bg-space: #070814;
+  --bg-chassis: #0d0f22;
+  --bg-panel: rgba(16, 19, 41, 0.88);
+  --bg-panel-inset: #090b17;
+  --border-neon-cyan: #00f3ff;
+  --border-neon-pink: #ff0055;
+  --border-neon-amber: #ffaa00;
+  --border-neon-purple: #b026ff;
+  --border-neon-green: #39ff14;
+
+  --neon-glow-cyan: 0 0 12px rgba(0, 243, 255, 0.45);
+  --neon-glow-pink: 0 0 12px rgba(255, 0, 85, 0.45);
+  --neon-glow-amber: 0 0 12px rgba(255, 170, 0, 0.45);
+
+  --text-primary: #f0f6fc;
+  --text-muted: #808bb2;
+  --text-dim: #4f587d;
+
+  --font-retro: 'Courier New', 'VT323', monospace;
+  --font-display: 'Impact', 'Segoe UI Black', system-ui, sans-serif;
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Cyberpunk Hex Inset Panel & Chassis */
+.chassis-box {
+  background: var(--bg-panel);
+  border: 1px solid rgba(0, 243, 255, 0.25);
+  border-radius: 6px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  position: relative;
+  backdrop-filter: blur(8px);
+}
+
+.chassis-box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--border-neon-cyan), transparent);
+  opacity: 0.6;
+}
+
+/* Corner Screws / Industrial Marks */
+.chassis-box .corner-screw {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #252a48;
+  border: 1px solid #3d4573;
+}
+.corner-tl { top: 6px; left: 6px; }
+.corner-tr { top: 6px; right: 6px; }
+.corner-bl { bottom: 6px; left: 6px; }
+.corner-br { bottom: 6px; right: 6px; }
+
+/* Glowing Neon Text & Accents */
+.text-cyan { color: var(--border-neon-cyan); text-shadow: 0 0 8px rgba(0, 243, 255, 0.6); }
+.text-pink { color: var(--border-neon-pink); text-shadow: 0 0 8px rgba(255, 0, 85, 0.6); }
+.text-amber { color: var(--border-neon-amber); text-shadow: 0 0 8px rgba(255, 170, 0, 0.6); }
+.text-green { color: var(--border-neon-green); text-shadow: 0 0 8px rgba(57, 255, 20, 0.6); }
+.text-red { color: #ff3344; text-shadow: 0 0 8px rgba(255, 51, 68, 0.6); }
+.text-dim { color: var(--text-dim); }
+
+/* Retro Digital Segment Display */
+.digital-display {
+  font-family: var(--font-retro);
+  background: #04050d;
+  border: 1px solid rgba(0, 243, 255, 0.35);
+  border-radius: 4px;
+  padding: 4px 10px;
+  color: var(--border-neon-cyan);
+  text-shadow: 0 0 6px rgba(0, 243, 255, 0.7);
+  letter-spacing: 2px;
+  font-size: 1.15rem;
+  font-weight: bold;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Neon Push Buttons */
+.btn-neon {
+  background: #141832;
+  border: 1px solid var(--border-neon-cyan);
+  color: var(--border-neon-cyan);
+  border-radius: 4px;
+  padding: 8px 18px;
+  font-family: var(--font-ui);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(0, 243, 255, 0.2);
+}
+
+.btn-neon:hover {
+  background: rgba(0, 243, 255, 0.18);
+  box-shadow: 0 0 16px rgba(0, 243, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-neon:active {
+  transform: translateY(1px);
+  box-shadow: 0 0 6px rgba(0, 243, 255, 0.3);
+}
+
+.btn-neon-pink {
+  border-color: var(--border-neon-pink);
+  color: var(--border-neon-pink);
+  box-shadow: 0 2px 8px rgba(255, 0, 85, 0.2);
+}
+.btn-neon-pink:hover {
+  background: rgba(255, 0, 85, 0.18);
+  box-shadow: 0 0 16px rgba(255, 0, 85, 0.5);
+}
+
+.btn-play {
+  background: linear-gradient(135deg, #18224b, #2a0b38);
+  border-color: #00f3ff;
+  color: #00f3ff;
+  font-size: 1.05rem;
+  padding: 10px 24px;
+}
+
+.btn-play.playing {
+  background: linear-gradient(135deg, #42082b, #190924);
+  border-color: #ff0055;
+  color: #ff0055;
+  box-shadow: 0 0 18px rgba(255, 0, 85, 0.6);
+}
+
+/* Custom Neon Range Sliders */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #0d1024;
+  border: 1px solid rgba(0, 243, 255, 0.2);
+  border-radius: 4px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 22px;
+  background: var(--border-neon-cyan);
+  border: 1px solid #fff;
+  border-radius: 2px;
+  cursor: pointer;
+  box-shadow: 0 0 10px var(--border-neon-cyan);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 22px;
+  background: var(--border-neon-cyan);
+  border: 1px solid #fff;
+  border-radius: 2px;
+  cursor: pointer;
+  box-shadow: 0 0 10px var(--border-neon-cyan);
+}

@@ -1,0 +1,51 @@
+/**
+ * 80s CRT Monitor Phosphor Screen Simulation & Scanlines.
+ */
+
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  transition: opacity 0.3s ease;
+}
+
+/* Scanlines pattern */
+.crt-overlay::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.4) 50%),
+              linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  z-index: 2;
+  background-size: 100% 3px, 4px 100%;
+  opacity: 0.65;
+}
+
+/* Subtle CRT phosphor flicker / beam drift */
+.crt-overlay::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: radial-gradient(circle at center, transparent 65%, rgba(0, 0, 0, 0.65) 100%);
+  z-index: 3;
+}
+
+/* CRT Screen Off State */
+body.crt-off .crt-overlay {
+  opacity: 0;
+}
+
+/* Tube Curvature simulation */
+.crt-screen-frame {
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 243, 255, 0.15);
+  border: 2px solid #1c2340;
+  border-radius: 8px;
+}
